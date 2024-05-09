@@ -31,6 +31,7 @@ TYPE = {"A" - analog,"D" - digital}<br>
 ### Inputs
 - Label | Digital Input (HIGH,LOW)
 - Label | Analog Input
+- Graph | Analog Input
 
 ### Outputs
 - Spin box | Analog  Outputs (0,255)

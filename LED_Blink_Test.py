@@ -1,14 +1,14 @@
 import time
 import serial
 
-y=serial.Serial(port='COM4', baudrate=115200, timeout=0.1)
+arduino=serial.Serial(port='COM4', baudrate=115200, timeout=0.1)
 
 
 def send_message(val):
     encodedMessage=val.encode()
-    y.write(encodedMessage)
+    arduino.write(encodedMessage)
     print(encodedMessage)    
-    data=y.readlines()
+    data=arduino.readlines()
     print (data)
 
 time.sleep(3)
