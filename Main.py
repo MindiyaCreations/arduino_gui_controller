@@ -6,8 +6,8 @@ import sys,time,serial,functools
 buttons = [["A",13],["B",11],["C",4]]
 checkboxes = [["D",5],["E",6],["F",7]]
 sliders = [["G",8],["H",9],["I",10]]
-spinboxes = [["J",3],["K",12],["L",2]]
-inputD = [["M",14],["N",15],["O",16]]
+spinboxes = [["J",3],["K",12],["L",14]]
+inputD = [["M",2],["N",15],["O",16]]
 inputA = [["P",17],["Q",18],["R",19]]
 
 arduino=serial.Serial(port='COM5', baudrate=115200, timeout=0.1)
@@ -118,27 +118,20 @@ class GUI(QMainWindow):
 
     def buttonAction(self,pin,pressed):
         send_message("|s_D_"+str(pin)+"_"+str(pressed)+"|")
-        if(pressed):    
-            print(str(pin) + " Pressed")
-        else:    
-            print(str(pin) + " Released")
 
     def checkboxAction(self,id):
-        value = self.checkboxWidgets[id].isChecked()
+        value = 1 if self.checkboxWidgets[id].isChecked() else 0
         pin = checkboxes[id][1]
-        print(str(pin) + " spinbox value "+str(value))
-        send_message("|s_A_"+str(pin)+"_"+str(value)+"|")
+        send_message("|s_D_"+str(pin)+"_"+str(value)+"|")
 
     def spinboxAction(self,id):
         value = self.spinboxWidgets[id].value()
         pin = spinboxes[id][1]
-        print(str(pin) + " spinbox value "+str(value))
         send_message("|s_A_"+str(pin)+"_"+str(value)+"|")
 
     def sliderAction(self,id):
         value = self.sliderWidgets[id].value()
         pin = sliders[id][1]
-        print(str(pin) + " slider value "+str(value))
         send_message("|s_A_"+str(pin)+"_"+str(value)+"|")
 
     def showInputs(self):
