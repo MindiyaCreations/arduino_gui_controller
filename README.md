@@ -24,6 +24,15 @@ VALUE = {<br>
 PINNUMBER = {"2","14" - (analog pin A0(Uno))....}<br>
 TYPE = {"A" - analog,"D" - digital}<br>
 
+#### Reply
+```|r_#TYPE#_#PINNUMBER#_#VALUE#|``` <br>
+TYPE = {"A" - analog,"D" - digital}<br>
+PINNUMBER = {"2","14" - (analog pin A0(Uno))....}<br>
+VALUE = {<br>
+&emsp;if digital = {0,1},<br>
+&emsp;if analog = {0...1023}<br>
+    }
+
 ## GUI
 
 - Spin box | Input updating speed

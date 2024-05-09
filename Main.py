@@ -1,17 +1,19 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import  *
-import sys,time,serial
+import sys,time,serial,functools
 
-buttons = [["Built in LED1",13]]
-checkboxes = [["Built in LED2",13]]
-sliders = [["Built in LED3",13]]
-spinboxes = [["Built in LED4",13]]
+buttons = [["A",2],["B",3],["C",4]]
+checkboxes = [["D",5],["E",6],["F",7]]
+sliders = [["G",8],["H",9],["I",10]]
+spinboxes = [["J",11],["K",12],["L",13]]
+inputD = [["M",14],["N",15],["O",16]]
+inputA = [["P",17],["Q",18],["R",19]]
 
 arduino=serial.Serial(port='COM5', baudrate=115200, timeout=0.1)
-time.sleep(2)
+time.sleep(3)
 
-def send_message(val):
+def send_message(val,ret=False):
     encodedMessage=val.encode()
     arduino.write(encodedMessage)
     print(val)    
@@ -20,8 +22,19 @@ def send_message(val):
     for i in data:
         k.append(i.decode())
     print (k)
+    if(ret):
+        if(len(k) == 0):
+            return -1
+        if(len(k) == 1):
+            return k[0]
+        return k[-1]
 
 class GUI(QMainWindow):
+    inputDWidgets = []
+    checkboxWidgets = []
+    spinboxWidgets = []
+    sliderWidgets = []
+
     def __init__(self):
         super(GUI, self).__init__()
         self.setWindowTitle("Arduino GUI Controller")
@@ -32,35 +45,49 @@ class GUI(QMainWindow):
             button = QPushButton()
             button.setText('Pin '+str(widget[1]))
             send_message('|o_'+str(widget[1])+'|')
-            button.pressed.connect(lambda: self.buttonAction(widget[1],1))
-            button.released.connect(lambda: self.buttonAction(widget[1],0))
+            button.pressed.connect(functools.partial(self.buttonAction,widget[1],1))
+            button.released.connect(functools.partial(self.buttonAction,widget[1],0))
             columns.addWidget(self.widgetTemplate(widget,button,text=widget[0]))
 
-        for widget in checkboxes:
+        for i in range(len(checkboxes)):
             checkbox = QCheckBox()
-            send_message('|o_'+str(widget[1])+'|')
-            checkbox.stateChanged.connect(lambda: self.checkboxAction(widget[1],checkbox.checkState()))
-            columns.addWidget(self.widgetTemplate(widget,checkbox))
+            self.checkboxWidgets.append(checkbox)
+            send_message('|o_'+str(checkboxes[i][1])+'|')
+            self.checkboxWidgets[-1].stateChanged.connect(functools.partial(self.checkboxAction,i))
+            columns.addWidget(self.widgetTemplate(checkboxes[i],self.checkboxWidgets[-1]))
 
-        for widget in spinboxes:
+        for i in range(len(spinboxes)):
             spinbox = QSpinBox()
-            send_message('|o_'+str(widget[1])+'|')
-            spinbox.setMinimum(0)
-            spinbox.setMaximum(255)
-            spinbox.valueChanged.connect(lambda: self.spinboxAction(widget[1],spinbox.value()))
-            columns.addWidget(self.widgetTemplate(widget,spinbox))
+            self.spinboxWidgets.append(spinbox)
+            send_message('|o_'+str(spinboxes[i][1])+'|')
+            self.spinboxWidgets[-1].setMinimum(0)
+            self.spinboxWidgets[-1].setMaximum(255)
+            self.spinboxWidgets[-1].valueChanged.connect(functools.partial(self.spinboxAction,i))
+            columns.addWidget(self.widgetTemplate(spinboxes[i],self.spinboxWidgets[-1]))
         
-        for widget in sliders:
+        for i in range(len(sliders)):
             slider = QSlider(Qt.Horizontal)
-            send_message('|o_'+str(widget[1])+'|')
-            slider.setMinimum(0)
-            slider.setMaximum(255)
-            slider.valueChanged.connect(lambda: self.sliderAction(widget[1],slider.value()))
-            columns.addWidget(self.widgetTemplate(widget,slider))
+            self.sliderWidgets.append(slider)
+            send_message('|o_'+str(sliders[i][1])+'|')
+            self.sliderWidgets[-1].setMinimum(0)
+            self.sliderWidgets[-1].setMaximum(255)
+            self.sliderWidgets[-1].valueChanged.connect(functools.partial(self.sliderAction,i))
+            columns.addWidget(self.widgetTemplate(sliders[i],self.sliderWidgets[-1]))
+
+        for widget in inputD:
+            label = QLabel()
+            send_message('|i_'+str(widget[1])+'|')
+            self.inputDWidgets.append(label)
+            self.inputDWidgets[-1].setText(' - Value')
+            columns.addWidget(self.widgetTemplate(widget,label))
 
         components = QWidget()
         components.setLayout(columns)
         self.setCentralWidget(components)
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.showInputs)
+        self.timer.start(2000)
 
         self.show()
 
@@ -84,18 +111,28 @@ class GUI(QMainWindow):
         else:    
             print(str(pin) + " Released")
 
-    def checkboxAction(self,pin,state):
-        print(str(pin) + " checked "+str(state))
-        send_message("|s_D_"+str(pin)+"_"+str(state)+"|")
-
-    def spinboxAction(self,pin,value):
+    def checkboxAction(self,id):
+        value = self.checkboxWidgets[id].isChecked()
+        pin = checkboxes[id][1]
         print(str(pin) + " spinbox value "+str(value))
         send_message("|s_A_"+str(pin)+"_"+str(value)+"|")
 
-    def sliderAction(self,pin,value):
+    def spinboxAction(self,id):
+        value = self.spinboxWidgets[id].value()
+        pin = spinboxes[id][1]
+        print(str(pin) + " spinbox value "+str(value))
+        send_message("|s_A_"+str(pin)+"_"+str(value)+"|")
+
+    def sliderAction(self,id):
+        value = self.sliderWidgets[id].value()
+        pin = sliders[id][1]
         print(str(pin) + " slider value "+str(value))
         send_message("|s_A_"+str(pin)+"_"+str(value)+"|")
 
+    def showInputs(self):
+        for i in range(len(inputD)):
+            val = send_message("|g_D_"+str(inputD[i][1])+']',ret=True)
+            self.inputDWidgets[i].setText(' : '+str(val))
 
     
 if __name__ == "__main__":

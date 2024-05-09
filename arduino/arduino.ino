@@ -100,13 +100,13 @@ void getInput(String command){
       value = analogRead(pinS.toInt());
       if(debug)
         Serial.println("Get " + pinS + " analog value - " + String(value));
-      Serial.println(value);
+      Serial.println("|r_A_"+pinS+"_"+value+"|");
     break;
     case 'D':
       value = digitalRead(pinS.toInt());
       if(debug)
         Serial.println("Get " + pinS + " digital value - " + String(value));
-      Serial.println(value);
+      Serial.println("|r_D_"+pinS+"_"+value+"|");
     break;
   }
 }
