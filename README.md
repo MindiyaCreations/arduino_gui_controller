@@ -47,3 +47,8 @@ VALUE = {<br>
 - Slider | Analog  Outputs (0,255)
 - Buttons | Digital Outputs
 - Check box | Digital Outputs
+
+## To Do
+
+- Add input displaying graph
+- Make initialization UI for to setup pins
