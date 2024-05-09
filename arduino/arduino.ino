@@ -3,7 +3,7 @@
   Getting Serial Commands and runnign functions accordingly
 */
 
-bool debug = true;
+bool debug = false;
 String command = "";
 bool commandProcessed = false;
 

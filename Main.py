@@ -3,10 +3,10 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import  *
 import sys,time,serial,functools
 
-buttons = [["A",2],["B",3],["C",4]]
+buttons = [["A",13],["B",11],["C",4]]
 checkboxes = [["D",5],["E",6],["F",7]]
 sliders = [["G",8],["H",9],["I",10]]
-spinboxes = [["J",11],["K",12],["L",13]]
+spinboxes = [["J",3],["K",12],["L",2]]
 inputD = [["M",14],["N",15],["O",16]]
 inputA = [["P",17],["Q",18],["R",19]]
 
@@ -20,17 +20,20 @@ def send_message(val,ret=False):
     data=arduino.readlines()
     k = []
     for i in data:
-        k.append(i.decode())
+        k.append(i.decode().replace('\r','').replace('\n',''))
     print (k)
-    if(ret):
-        if(len(k) == 0):
-            return -1
-        if(len(k) == 1):
-            return k[0]
-        return k[-1]
+    for command in k:
+        if(command[0] == '|' and command[-1] == '|'):
+            commands = command.replace('|','').split('_')
+            if(commands[0] == 'r'):
+                return int(commands[2]),int(commands[3])
+    return -1,-1
 
 class GUI(QMainWindow):
     inputDWidgets = []
+    inputAWidgets = []
+    inputDPinIndex = []
+    inputAPinIndex = []
     checkboxWidgets = []
     spinboxWidgets = []
     sliderWidgets = []
@@ -79,6 +82,15 @@ class GUI(QMainWindow):
             send_message('|i_'+str(widget[1])+'|')
             self.inputDWidgets.append(label)
             self.inputDWidgets[-1].setText(' - Value')
+            self.inputDPinIndex.append(widget[1])
+            columns.addWidget(self.widgetTemplate(widget,label))
+
+        for widget in inputA:
+            label = QLabel()
+            send_message('|i_'+str(widget[1])+'|')
+            self.inputAWidgets.append(label)
+            self.inputAWidgets[-1].setText(' - Value')
+            self.inputAPinIndex.append(widget[1])
             columns.addWidget(self.widgetTemplate(widget,label))
 
         components = QWidget()
@@ -130,9 +142,23 @@ class GUI(QMainWindow):
         send_message("|s_A_"+str(pin)+"_"+str(value)+"|")
 
     def showInputs(self):
+        inputDValues = [-1] * len(inputD)
+        inputAValues = [-1] * len(inputA)
         for i in range(len(inputD)):
-            val = send_message("|g_D_"+str(inputD[i][1])+']',ret=True)
-            self.inputDWidgets[i].setText(' : '+str(val))
+            pin,val = send_message("|g_D_"+str(inputD[i][1])+'|',ret=True)
+            if(pin == -1):
+                continue
+            inputDValues[self.inputDPinIndex.index(pin)] = val
+        for i in range(len(inputA)):
+            pin,val = send_message("|g_A_"+str(inputA[i][1])+'|',ret=True)
+            if(pin == -1):
+                continue
+            inputAValues[self.inputAPinIndex.index(pin)] = val
+
+        for i in range(len(inputD)):
+            self.inputDWidgets[i].setText(' : '+str(inputDValues[i]))
+        for i in range(len(inputA)):
+            self.inputAWidgets[i].setText(' : '+str(inputAValues[i]))
 
     
 if __name__ == "__main__":
