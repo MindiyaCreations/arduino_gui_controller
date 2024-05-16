@@ -1,18 +1,33 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import  *
-import sys,time,serial,functools
+import sys,time,serial,functools,csv
 
-buttons = [["A",13],["B",11],["C",4]]
-checkboxes = [["D",5],["E",6],["F",7]]
-sliders = [["G",8],["H",9],["I",10]]
-spinboxes = [["J",3],["K",12],["L",14]]
-inputD = [["M",2],["N",15],["O",16]]
-inputA = [["P",17],["Q",18],["R",19]]
+buttons = []
+checkboxes = []
+sliders = []
+spinboxes = []
+inputD = []
+inputA = []
 
-
-
-exit()
+with open("config.csv", newline='') as csvfile:
+    spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+    for pins in spamreader:
+        data = pins[0].split(',')
+        type = int(data[2])
+        pin_data = [data[1],int(data[0])]
+        if type == 1:
+            buttons.append(pin_data)
+        elif type == 2:
+            checkboxes.append(pin_data)
+        elif type == 3:
+            sliders.append(pin_data)
+        elif type == 4:
+            spinboxes.append(pin_data)
+        elif type == 5:
+            inputD.append(pin_data)
+        elif type == 6:
+            inputA.append(pin_data)
 
 arduino=serial.Serial(port='COM5', baudrate=115200, timeout=0.1)
 time.sleep(3)

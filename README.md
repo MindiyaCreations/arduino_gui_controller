@@ -65,7 +65,7 @@ VALUE = {<br>
 6. Analog Input
 
 ### Board TXT file
-```#PIN_NUMBER#,#PIN_NAME#,#TYP#``` <br>
+```#PIN_NUMBER#,#PIN_NAME#,#TYPE#``` <br>
 
 
 ## To Do
