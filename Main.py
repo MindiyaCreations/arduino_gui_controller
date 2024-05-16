@@ -10,6 +10,10 @@ spinboxes = [["J",3],["K",12],["L",14]]
 inputD = [["M",2],["N",15],["O",16]]
 inputA = [["P",17],["Q",18],["R",19]]
 
+
+
+exit()
+
 arduino=serial.Serial(port='COM5', baudrate=115200, timeout=0.1)
 time.sleep(3)
 

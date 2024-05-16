@@ -48,6 +48,26 @@ VALUE = {<br>
 - Buttons | Digital Outputs
 - Check box | Digital Outputs
 
+
+## Pin types
+
+1st bit - Analog Read<br>
+2nd bit - Digital Read<br>
+3rd bit - Analog Write<br>
+4th bit - Digital Write<br>
+
+### Control Types
+1. Buttons
+2. Checkboxes
+3. Sliders
+4. Spinboxes
+5. Digital Input
+6. Analog Input
+
+### Board TXT file
+```#PIN_NUMBER#,#PIN_NAME#,#TYP#``` <br>
+
+
 ## To Do
 
 - Add input displaying graph
