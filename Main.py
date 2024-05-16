@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import  *
-import sys,time,serial,functools,csv
+import sys,time,serial,functools,csv,comport
 
 buttons = []
 checkboxes = []
@@ -10,27 +10,30 @@ spinboxes = []
 inputD = []
 inputA = []
 
-with open("config.csv", newline='') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-    for pins in spamreader:
-        data = pins[0].split(',')
-        type = int(data[2])
-        pin_data = [data[1],int(data[0])]
-        if type == 1:
-            buttons.append(pin_data)
-        elif type == 2:
-            checkboxes.append(pin_data)
-        elif type == 3:
-            sliders.append(pin_data)
-        elif type == 4:
-            spinboxes.append(pin_data)
-        elif type == 5:
-            inputD.append(pin_data)
-        elif type == 6:
-            inputA.append(pin_data)
+try:
+    with open("config.csv", newline='') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        for pins in spamreader:
+            data = pins[0].split(',')
+            type = int(data[2])
+            pin_data = [data[1],int(data[0])]
+            if type == 1:
+                buttons.append(pin_data)
+            elif type == 2:
+                checkboxes.append(pin_data)
+            elif type == 3:
+                sliders.append(pin_data)
+            elif type == 4:
+                spinboxes.append(pin_data)
+            elif type == 5:
+                inputD.append(pin_data)
+            elif type == 6:
+                inputA.append(pin_data)
+except:
+    print("Error in config.csv\nRebuild it with initgui.py")
+    sys.exit()
 
-arduino=serial.Serial(port='COM5', baudrate=115200, timeout=0.1)
-time.sleep(3)
+arduino = None
 
 def send_message(val,ret=False):
     encodedMessage=val.encode()
@@ -60,6 +63,33 @@ class GUI(QMainWindow):
     def __init__(self):
         super(GUI, self).__init__()
         self.setWindowTitle("Arduino GUI Controller")
+        print("started")
+
+        columns = QVBoxLayout()
+        components = QWidget()
+
+        label = QLabel()
+        label.setText("Select COM Port")
+        columns.addWidget(label)
+
+        self.coms = QComboBox()
+        self.coms.addItems(comport.serial_ports())
+        columns.addWidget(self.coms)
+
+        button = QPushButton()
+        button.pressed.connect(self.init_system)
+        button.setText("OK")
+        columns.addWidget(button)
+
+        components.setLayout(columns)
+        self.setCentralWidget(components)
+        self.show()
+
+    def init_system(self):
+        global arduino
+
+        arduino=serial.Serial(port=self.coms.currentText(), baudrate=115200, timeout=0.1)
+        # time.sleep(2)
 
         columns = QVBoxLayout()
 

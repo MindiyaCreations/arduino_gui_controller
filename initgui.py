@@ -49,7 +49,7 @@ class GUI(QMainWindow):
 
     def __init__(self):
         super(GUI, self).__init__()
-        self.setWindowTitle("Arduino GUI Controller")
+        self.setWindowTitle("Arduino GUI Controller - Init GUI")
         self.columns = QVBoxLayout()
 
         self.selectBoard()
