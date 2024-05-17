@@ -85,13 +85,13 @@ class GUI(QMainWindow):
 
     def update_widgets(self):
         pinID = pin_name[self.selected_board_id].index(self.pinNumbers.currentText())
-        pin_data = [self.nameLineEdit.text(),pin_pin[self.selected_board_id][pinID],int(self.pinTypes.currentText()[0:1])]
+        pin_data = [pin_pin[self.selected_board_id][pinID],self.nameLineEdit.text().replace(' ','_').replace(',','_'),int(self.pinTypes.currentText()[0:1])]
         self.pin_data_list.append(pin_data)
         self.pin_data_list_id.append(pinID)
         inputRow = QHBoxLayout()
         deleteButton = QPushButton()
         label = QLabel()
-        label.setText(str(pinID) + ") Pin " + pin_name[self.selected_board_id][pinID] + " named " + self.nameLineEdit.text() + " used as " + self.pinTypes.currentText()[2:])
+        label.setText(str(pinID) + ") Pin " + pin_name[self.selected_board_id][pinID] + " named {" + self.nameLineEdit.text() + "} used as " + self.pinTypes.currentText()[2:])
         deleteButton.setText("Delete")
         deleteButton.pressed.connect(functools.partial(self.removeItem,pinID))
         inputRow.addWidget(label)

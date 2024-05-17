@@ -15,6 +15,7 @@ try:
         spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
         for pins in spamreader:
             data = pins[0].split(',')
+            print(data)
             type = int(data[2])
             pin_data = [data[1],int(data[0])]
             if type == 1:
@@ -29,7 +30,8 @@ try:
                 inputD.append(pin_data)
             elif type == 6:
                 inputA.append(pin_data)
-except:
+except Exception as e:
+    print(e)
     print("Error in config.csv\nRebuild it with initgui.py")
     sys.exit()
 
@@ -89,7 +91,7 @@ class GUI(QMainWindow):
         global arduino
 
         arduino=serial.Serial(port=self.coms.currentText(), baudrate=115200, timeout=0.1)
-        # time.sleep(2)
+        time.sleep(2)
 
         columns = QVBoxLayout()
 
